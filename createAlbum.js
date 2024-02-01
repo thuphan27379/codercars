@@ -6,35 +6,67 @@
 5.save data: luu tru
 */
 const fs = require("fs");
-const csv = require("csvtojson"); //
+const csv = require("csvtojson"); 
+const mongoose = require('mongoose')
+const Car = require('./models/Car')
 
-const data = {
-  data: [{}],
-};
+// const data = {
+//   data: [{}],
+// };
+
+// 1. ð?c data t? file csv
+// 2. convert data -> array
+// 3. seed field trong data cho match v?i field models
+// 4. connect v?i mongo atlas
+// 5. create data lên atlas
 
 const createAlbum = async () => {
-  let newData = await csv().fromFile("data.csv");
-  console.log(newData);
-
-  newData = new Set(
-    newData.map((e, index) => ({
-      id: index + 1,
-      name: e.Make,
-    }))
-  );
-
-  newData = Array.from(newData);
+  // csv to json
+  let newData = await csv().fromFile("./archive/data.csv");
   // console.log(newData);
 
-  //
-  let data = JSON.parse(fs.readFileSync("db.json"));
+newData = Array.from(newData)
 
-  data = { data: newData };
+await mongoose.connect(
+  "mongodb+srv://thuphan273:123456789Thu@cluster0.jpe3qy9.mongodb.net/"
+).then (() => {
+  console.log("connect to db success");
+})
 
-  fs.writeFileSync("db.json", JSON.stringify(data));
-  // JS obj to json string
-  // console.log("done");
+newData = newData.map((car) => {
+  return {    
+    make: car.Make,
+    model:car.Model,
+    release_date: Number(car.Year),
+    transmission_type: car['Transmission Type'],
+    size: car["Vehicle Size"],
+    style: car["Vehicle Style"],
+    price: Number(car.MSRP),
+  }
+})
+await Car.create(newData).then(() => console.log("create success"))
+
+  // newData = new Set(
+  //   newData.map((e, index) => ({
+  //     id: index + 1,
+  //     name: e.Make,
+  //   }))
+  // );
+
+  // newData = Array.from(newData);
+  // // console.log(newData);
+
+  // // read data in db.json
+  // let data = JSON.parse(fs.readFileSync("db.json"));
+  
+  // data = { data: newData };
+
+  // fs.writeFileSync("db.json", JSON.stringify(data));
+  // // JS obj to json string
+  // // console.log("done");
 };
 
-createAlbum();
+createAlbum()
+.then (() => console.log('create db success')
+.catch((err) => console.log('err')));
 

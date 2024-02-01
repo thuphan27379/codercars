@@ -1,23 +1,21 @@
 const { sendResponse, AppError } = require("../helpers/utils.js");
 const Car = require("../models/Car.js");
-const fs = require("fs");
-const path = require("path");
 
 const carController = {};
 
-const carsJsonPath = path.join(__dirname, "../cars.json");
-
 // Create a new car
 carController.createCar = async (req, res, next) => {
+  // In a real project, you will get info from req
   const { make, model, release_date, transmission_type, size, style, price } = req.body;
 
   try {
-    if (!req.body) {
-      throw new AppError(400, "Bad Request", "Create car Error");
+    // Validate if required fields are provided in the request
+    if (!make || !model || !release_date || !transmission_type || !size || !style || !price) {
+      throw new AppError(400, "Bad Request", "Missing required fields");
     }
 
-    // Create in MongoDB
-    const createdCarMongo = await Car.create({
+    // Mongoose query
+    const created = await Car.create({
       make,
       model,
       release_date,
@@ -27,21 +25,11 @@ carController.createCar = async (req, res, next) => {
       price
     });
 
-    // Read from cars.json
-    const jsonData = fs.readFileSync(carsJsonPath, "utf-8");
-    const listOfFound = JSON.parse(jsonData);
-
-    // Add the newly created car to the array
-    listOfFound.push(createdCarMongo);
-
-    // Write back to cars.json
-    fs.writeFileSync(carsJsonPath, JSON.stringify(listOfFound, null, 2));
-
     sendResponse(
       res,
       200,
       true,
-      { car: createdCarMongo },
+      { car: created },
       null,
       "Create Car Successfully"
     );
@@ -52,19 +40,20 @@ carController.createCar = async (req, res, next) => {
 
 // Get all cars
 carController.getCars = async (req, res, next) => {
-  try {
-    // Read from cars.json
-    const jsonData = fs.readFileSync(carsJsonPath, "utf-8");
-    const listOfFound = JSON.parse(jsonData);
+  // In a real project, you will get conditions from req and then construct the filter object for the query
+  // Empty filter means get all
+  const filter = {};
 
-    // Fetch from MongoDB
-    const carsFromMongo = await Car.find().limit(10);
+  try {
+    // Mongoose query
+    Car.f;
+    const listOfFound = await Car.find(filter).limit(10);
 
     sendResponse(
       res,
       200,
       true,
-      { cars: carsFromMongo.concat(listOfFound), total: carsFromMongo.length + listOfFound.length },
+      { car: listOfFound, page: 1, total: 1192 },
       null,
       "Get Car List Successfully!"
     );
@@ -75,29 +64,22 @@ carController.getCars = async (req, res, next) => {
 
 // Update a car
 carController.editCar = async (req, res, next) => {
-  const targetId = req.params.id;
+  // In a real project, you will get id from req
+  const targetId = req.params._id;
   const updateInfo = req.body;
+
+  // Options allow you to modify the query, e.g., new true returns the latest update of data
   const options = { new: true };
 
   try {
-    // Update in MongoDB
-    const updatedCarMongo = await Car.findByIdAndUpdate(targetId, updateInfo, options);
-
-    // Read from cars.json
-    const jsonData = fs.readFileSync(carsJsonPath, "utf-8");
-    let listOfFound = JSON.parse(jsonData);
-
-    // Update the car in the array
-    listOfFound = listOfFound.map(car => (car._id == targetId ? updatedCarMongo : car));
-
-    // Write back to cars.json
-    fs.writeFileSync(carsJsonPath, JSON.stringify(listOfFound, null, 2));
+    // Mongoose query
+    const updated = await Car.findByIdAndUpdate(targetId, updateInfo, options);
 
     sendResponse(
       res,
       200,
       true,
-      { car: updatedCarMongo },
+      { car: updated },
       null,
       "Update Car Successfully!"
     );
@@ -108,27 +90,18 @@ carController.editCar = async (req, res, next) => {
 
 // Delete car
 carController.deleteCar = async (req, res, next) => {
-  const targetId = req.params.id;
+  // In a real project, you will get id from req
+  const targetId = req.params._id;
 
   try {
-    // Delete in MongoDB
-    const deletedCarMongo = await Car.findByIdAndDelete(targetId);
-
-    // Read from cars.json
-    const jsonData = fs.readFileSync(carsJsonPath, "utf-8");
-    let listOfFound = JSON.parse(jsonData);
-
-    // Remove the car from the array
-    listOfFound = listOfFound.filter(car => car._id != targetId);
-
-    // Write back to cars.json
-    fs.writeFileSync(carsJsonPath, JSON.stringify(listOfFound, null, 2));
+    // Mongoose query
+    const deleted = await Car.findByIdAndDelete(targetId);
 
     sendResponse(
       res,
       200,
       true,
-      { car: deletedCarMongo },
+      { car: deleted },
       null,
       "Delete Car Successfully!"
     );
@@ -137,4 +110,5 @@ carController.deleteCar = async (req, res, next) => {
   }
 };
 
+// Export
 module.exports = carController;
