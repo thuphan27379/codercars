@@ -53,10 +53,20 @@ carController.getCars = async (req, res, next) => {
   // Empty filter means get all
   const filter = {};
 
+  // ph?n get chia page truoc tiên ch? nh?n query page t? fe b?ng req.query
+  // r?i t? page ğó ch? tính offset  -> b? offset vào .skip() khi get car c?a mongo
+  let { page, limit } = { ...req.query };
+  page = parseInt(page) || 1; //page
+  limit = parseInt(limit) || 10;
+
+  // for pagination
+  const offset = limit * (page - 1);
+
   try {
     // Mongoose query
     Car.f;
-    const listOfFound = await Car.find(filter).limit(50);
+    // return cars and page
+    const listOfFound = await Car.find(filter).skip(offset).limit(50);
 
     sendResponse(
       res,
