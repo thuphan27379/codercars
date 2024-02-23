@@ -6,45 +6,47 @@
 5.save data: luu tru
 */
 const fs = require("fs");
-const csv = require("csvtojson"); 
-const mongoose = require('mongoose')
-const Car = require('./models/Car')
+const csv = require("csvtojson");
+const mongoose = require("mongoose");
+const Car = require("./models/Car");
 
 // const data = {
 //   data: [{}],
 // };
 
-// 1. ð?c data t? file csv
+// 1. doc data tu file csv
 // 2. convert data -> array
-// 3. seed field trong data cho match v?i field models
-// 4. connect v?i mongo atlas
-// 5. create data lên atlas
+// 3. seed field trong data cho match voi field models
+// 4. connect voi mongo atlas
+// 5. create data len atlas
 
 const createAlbum = async () => {
   // csv to json
   let newData = await csv().fromFile("./archive/data.csv");
   // console.log(newData);
 
-newData = Array.from(newData)
+  newData = Array.from(newData);
 
-await mongoose.connect(
-  "mongodb+srv://thuphan273:123456789Thu@cluster0.jpe3qy9.mongodb.net/"
-).then (() => {
-  console.log("connect to db success");
-})
+  await mongoose
+    .connect(
+      "mongodb+srv://thuphan273:123456789Thu@cluster0.jpe3qy9.mongodb.net/"
+    )
+    .then(() => {
+      console.log("connect to db success");
+    });
 
-newData = newData.map((car) => {
-  return {    
-    make: car.Make,
-    model:car.Model,
-    release_date: Number(car.Year),
-    transmission_type: car['Transmission Type'],
-    size: car["Vehicle Size"],
-    style: car["Vehicle Style"],
-    price: Number(car.MSRP),
-  }
-})
-await Car.create(newData).then(() => console.log("create success"))
+  newData = newData.map((car) => {
+    return {
+      make: car.Make,
+      model: car.Model,
+      release_date: Number(car.Year),
+      transmission_type: car["Transmission Type"],
+      size: car["Vehicle Size"],
+      style: car["Vehicle Style"],
+      price: Number(car.MSRP),
+    };
+  });
+  await Car.create(newData).then(() => console.log("create success"));
 
   // newData = new Set(
   //   newData.map((e, index) => ({
@@ -58,7 +60,7 @@ await Car.create(newData).then(() => console.log("create success"))
 
   // // read data in db.json
   // let data = JSON.parse(fs.readFileSync("db.json"));
-  
+
   // data = { data: newData };
 
   // fs.writeFileSync("db.json", JSON.stringify(data));
@@ -66,7 +68,6 @@ await Car.create(newData).then(() => console.log("create success"))
   // // console.log("done");
 };
 
-createAlbum()
-.then (() => console.log('create db success')
-.catch((err) => console.log('err')));
-
+createAlbum().then(() =>
+  console.log("create db success").catch((err) => console.log("err"))
+);

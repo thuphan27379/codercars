@@ -5,12 +5,21 @@ const carController = {};
 
 // Create a new car
 carController.createCar = async (req, res, next) => {
-  // In a real project, you will get info from req
-  const { make, model, release_date, transmission_type, size, style, price } = req.body;
-
   try {
+    // In a real project, you will get info from req
+    const { make, model, release_date, transmission_type, size, style, price } =
+      req.body;
+
     // Validate if required fields are provided in the request
-    if (!make || !model || !release_date || !transmission_type || !size || !style || !price) {
+    if (
+      !make ||
+      !model ||
+      !release_date ||
+      !transmission_type ||
+      !size ||
+      !style ||
+      !price
+    ) {
       throw new AppError(400, "Bad Request", "Missing required fields");
     }
 
@@ -22,7 +31,7 @@ carController.createCar = async (req, res, next) => {
       transmission_type,
       size,
       style,
-      price
+      price,
     });
 
     sendResponse(
@@ -47,7 +56,7 @@ carController.getCars = async (req, res, next) => {
   try {
     // Mongoose query
     Car.f;
-    const listOfFound = await Car.find(filter).limit(10);
+    const listOfFound = await Car.find(filter).limit(50);
 
     sendResponse(
       res,
@@ -64,14 +73,14 @@ carController.getCars = async (req, res, next) => {
 
 // Update a car
 carController.editCar = async (req, res, next) => {
-  // In a real project, you will get id from req
-  const targetId = req.params._id;
-  const updateInfo = req.body;
-
-  // Options allow you to modify the query, e.g., new true returns the latest update of data
-  const options = { new: true };
-
   try {
+    // In a real project, you will get id from req
+    const targetId = req.params._id;
+    const updateInfo = req.body;
+
+    // Options allow you to modify the query, e.g., new true returns the latest update of data
+    const options = { new: true };
+
     // Mongoose query
     const updated = await Car.findByIdAndUpdate(targetId, updateInfo, options);
 
@@ -88,14 +97,16 @@ carController.editCar = async (req, res, next) => {
   }
 };
 
-// Delete car
+// Delete a car
 carController.deleteCar = async (req, res, next) => {
-  // In a real project, you will get id from req
-  const targetId = req.params._id;
-
   try {
+    // In a real project, you will get id from req
+    const targetId = req.params._id;
+
+    const options = { new: true };
+
     // Mongoose query
-    const deleted = await Car.findByIdAndDelete(targetId);
+    const deleted = await Car.findByIdAndDelete(targetId, options);
 
     sendResponse(
       res,

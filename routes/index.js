@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { sendResponse, AppError } = require("../helpers/utils.js");
 
-/* GET home page. */
+/* GET home page */
 router.get("/", function (req, res, next) {
   res.status(200).send("Welcome to CoderSchool! - CODERCARS");
 });
@@ -29,7 +29,7 @@ router.get("/template/:test", async (req, res, next) => {
   }
 });
 
-//
+// router /cars
 const carRouter = require("./car.api.js");
 router.use("/cars", carRouter);
 
