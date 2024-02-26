@@ -4,6 +4,7 @@ const Car = require("../models/Car.js");
 const carController = {};
 
 // Create a new car
+// ? ph?n create ch? l?y thông tin t? front end b?ng req.body , ch?  xem trong models nhýng field nào required: true th? check xem front end g?i data v? có ð?y ð? field ðó chýa -> n?u chýa th? throw error n?u ð?y ð? th? s? d?ng .create c?a mongo ð? create
 carController.createCar = async (req, res, next) => {
   try {
     // In a real project, you will get info from req
@@ -24,7 +25,7 @@ carController.createCar = async (req, res, next) => {
     }
 
     // Mongoose query
-    const created = await Car.create({
+    let created = await Car.create({
       make,
       model,
       release_date,
@@ -82,6 +83,7 @@ carController.getCars = async (req, res, next) => {
 };
 
 // Update a car
+// check xem l?y params id req.params.id t? frontend ðúng chýa sau ðó l?y thông tin edit tý req.body -> s? d?ng findByIdAndUpdate ð? update, console.log
 carController.editCar = async (req, res, next) => {
   try {
     // In a real project, you will get id from req
@@ -92,7 +94,7 @@ carController.editCar = async (req, res, next) => {
     const options = { new: true };
 
     // Mongoose query
-    const updated = await Car.findByIdAndUpdate(targetId, updateInfo, options);
+    let updated = await Car.findByIdAndUpdate(targetId, updateInfo, options);
 
     sendResponse(
       res,
