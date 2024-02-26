@@ -10,6 +10,7 @@ carController.createCar = async (req, res, next) => {
     // In a real project, you will get info from req
     const { make, model, release_date, transmission_type, size, style, price } =
       req.body;
+    console.log(req.body);
 
     // Validate if required fields are provided in the request
     if (
@@ -89,6 +90,8 @@ carController.editCar = async (req, res, next) => {
     // In a real project, you will get id from req
     const targetId = req.params._id;
     const updateInfo = req.body;
+    console.log(targetId);
+    console.log(updateInfo);
 
     // Options allow you to modify the query, e.g., new true returns the latest update of data
     const options = { new: true };
