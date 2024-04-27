@@ -3,7 +3,7 @@ const Car = require("../models/Car.js");
 
 const carController = {};
 
-// Create a new car
+// Create a new car OK
 // ? ph?n create ch? l?y thông tin t? front end b?ng req.body , ch?  xem trong models nhýng field nào required: true th? check xem front end g?i data v? có ð?y ð? field ðó chýa -> n?u chýa th? throw error n?u ð?y ð? th? s? d?ng .create c?a mongo ð? create
 carController.createCar = async (req, res, next) => {
   try {
@@ -49,18 +49,17 @@ carController.createCar = async (req, res, next) => {
   }
 };
 
-// Get all cars
+// Get all cars OK
 carController.getCars = async (req, res, next) => {
   // In a real project, you will get conditions from req and then construct the filter object for the query
   // Empty filter means get all
   const filter = {};
 
-  // ph?n get chia page truoc tiên ch? nh?n query page t? fe b?ng req.query
-  // r?i t? page ðó ch? tính offset  -> b? offset vào .skip() khi get car c?a mongo
+  // ph?n get chia page truoc tižn ch? nh?n query page t? fe b?ng req.query
+  // r?i t? page žž ch? tžnh offset  -> b? offset vžo .skip() khi get car c?a mongo
   let { page, limit } = { ...req.query };
   page = parseInt(page) || 1; //page
   limit = parseInt(limit) || 10;
-
   // for pagination
   const offset = limit * (page - 1);
 
@@ -68,7 +67,11 @@ carController.getCars = async (req, res, next) => {
     // Mongoose query
     Car.f;
     // return cars and page
-    const listOfFound = await Car.find(filter).skip(offset).limit(50);
+    // const listOfFound = await Car.find(filter).skip(offset).limit(50);
+    const listOfFound = await Car.find(filter)
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // sort({ createdAt: -1 }) -> sort nhung car có time created m?i nh?t
 
     sendResponse(
       res,
@@ -83,12 +86,14 @@ carController.getCars = async (req, res, next) => {
   }
 };
 
-// Update a car
+// Update a car OK
 // check xem l?y params id req.params.id t? frontend ðúng chýa sau ðó l?y thông tin edit tý req.body -> s? d?ng findByIdAndUpdate ð? update, console.log
 carController.editCar = async (req, res, next) => {
   try {
     // In a real project, you will get id from req
-    const targetId = req.params._id;
+    // const targetId = req.params._id;
+    const targetId = req.params.id;
+
     const updateInfo = req.body;
     console.log(targetId);
     console.log(updateInfo);
@@ -116,8 +121,8 @@ carController.editCar = async (req, res, next) => {
 carController.deleteCar = async (req, res, next) => {
   try {
     // In a real project, you will get id from req
-    const targetId = req.params._id;
-
+    const targetId = req.params.id;
+    console.log(req.params.id);
     const options = { new: true };
 
     // Mongoose query
