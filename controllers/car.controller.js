@@ -57,10 +57,10 @@ carController.getCars = async (req, res, next) => {
 
   // ph?n get chia page truoc tižn ch? nh?n query page t? fe b?ng req.query
   // r?i t? page žž ch? tžnh offset  -> b? offset vžo .skip() khi get car c?a mongo
+  // for pagination
   let { page, limit } = { ...req.query };
   page = parseInt(page) || 1; //page
   limit = parseInt(limit) || 10;
-  // for pagination
   const offset = limit * (page - 1);
 
   try {
@@ -93,7 +93,6 @@ carController.editCar = async (req, res, next) => {
     // In a real project, you will get id from req
     // const targetId = req.params._id;
     const targetId = req.params.id;
-
     const updateInfo = req.body;
     console.log(targetId);
     console.log(updateInfo);
